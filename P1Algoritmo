@@ -1,0 +1,642 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+#include <ctype.h>
+#include <stdbool.h>
+void PartQuick(int vetor[],int e,int d,int* i,int* j){
+	int x,w;
+	*i=e;
+	*j=d;
+	x = vetor[(*i+*j)/2];
+	do{
+		while(x>vetor[*i]){
+			(*i)++;
+		}
+		while(x<vetor[*j]){
+			(*j)--;
+		}
+		if(*i<=*j){
+			w=vetor[*i];
+			vetor[*i]=vetor[*j];
+			vetor[*j]=w;
+			(*i)++;
+			(*j)--;
+		} 
+	}while(*i<=*j);
+}
+
+void OrdSort(int vetor, int e,int d){
+	int i,j;
+	PartQuick(vetor,e,d,&i,&j);
+	if(e<j){
+		OrdSort(vetor,e,j);
+	}
+	if(i<d){
+		OrdSort(vetor,i,d);
+	}
+}
+
+void QuickSort(int vetor,int tam){
+	OrdSort(vetor,0,tam-1);
+}
+
+}
+void HeapSort(int vetor[],int tam){
+	int i,pai,filho,t;
+	i=tam;
+	while(true){
+		if(i>0){
+			i--;
+			t=vetor[i];
+		}else{
+			tam--;
+			if(tam==0) return;
+			t=vetor[tam];
+			vetor[tam]=vetor[0];
+		}
+		pai=i;
+		filho= i*2+1;
+		while(filho<tam){
+			if((filho+1<tam)&&(vetor[filho+1]>vetor[filho])) filho++;
+			if(vetor[filho]>t){
+				vetor[pai]=vetor[filho];
+				pai=filho;
+				filho=pai *2+1;
+			}else{
+				break;
+			}
+		}
+		vetor[pai]=t;
+	}
+}
+
+void ShellSort(int vetor[],int tam ){
+	int i,j,n,aux=1;
+	do{
+		aux=aux*3+1;
+	}while(aux<tam);
+	do{
+		aux = aux/3;
+		for(i=aux;i<tam;i++){
+			n=vetor[i];
+			j=i-aux;
+			while(j>=0 && n<vetor[j]){
+				vetor[j+aux]=vetor[j];
+				j = j-aux;
+			}
+			vetor[j+aux]= n;
+		}
+	}while(aux>1);
+	
+}
+
+
+void Insertion_Sort(int vetor[], int tam){ 
+	int i, j, numero;
+
+	for(i=1; i<tam;i++)
+	{
+		numero = vetor[i];
+		j=i-1;
+		while((j>=0)&&(numero<vetor[j]))
+		{
+			vetor[j+1] = vetor[j];
+			j--;
+		}
+		vetor[j+1]=numero;
+	}
+}
+
+void Selection_Sort(int num[], int tam) 
+{ 
+  int i, j, min, aux;
+  for (i = 0; i < (tam-1); i++) 
+   {
+    min = i;
+    for (j = (i+1); j < tam; j++) {
+      if(num[j] < num[min]) {
+        min = j;
+      }
+    }
+    if (i != min) {
+      aux = num[i];
+      num[i] = num[min];
+      num[min] = aux;
+    }
+  }
+}
+
+void merge(int num[], int tam) {
+  int mid;
+  int i, j, k;
+  int* tmp;
+
+  tmp = (int*) malloc(tam * sizeof(int));
+  if (tmp == NULL) {
+    exit(1);
+  }
+
+  mid = tam / 2;
+
+  i = 0;
+  j = mid;
+  k = 0;
+  while (i < mid && j < tam) {
+    if (num[i] <= num[j]) {
+      tmp[k] = num[i++];
+    }
+    else {
+      tmp[k] = num[j++];
+    }
+    ++k;
+  }
+
+  if (i == mid) {
+    while (j < tam) {
+      tmp[k++] = num[j++];
+    }
+  }
+  else {
+    while (i < mid) {
+      tmp[k++] = num[i++];
+
+    }
+  }
+
+  for (i = 0; i < tam; ++i) {
+    num[i] = tmp[i];
+  }
+
+  free(tmp);
+}
+
+void mergeSort(int num[], int tam) {
+  int mid;
+
+  if (tam > 1) {
+    mid = tam / 2;
+    mergeSort(num, mid);
+    mergeSort(num + mid, tam - mid);
+    merge(num, tam);
+  }
+}
+
+void gerarSequencia(int * vetor, int qtd, char op)
+{
+	int i, x;
+	
+	switch(op)
+	{
+	
+		case 'c':
+	            srand( (unsigned)time(NULL) );
+	            x = rand() % 100000;
+	            for(i = 0; i<qtd; i++)
+	            {
+	                vetor[i] = x;
+	                x++;
+	            }
+	
+	        break;
+	
+	        case 'd':
+	            srand( (unsigned)time(NULL) );
+	            x = rand() % 100000;
+	            for(i = 0; i<qtd; i++)
+	            {
+	                vetor[i] = x;
+	                x--;
+	            }
+	        break;
+	
+	        case 'r':
+	        	srand( (unsigned)time(NULL) );
+	            for(i = 0; i<qtd; i++)
+	            {
+	                x = rand() % 100000;
+	                vetor[i] = x;
+	            }
+	        break;
+	}
+}
+//gerarArquivo(vetor100000, "100000", ordem, codigo);
+void gerarArquivo(int *vetor, char tam[], char ordem, int codigo)
+{
+	char nome[40] = "Entrada";
+	FILE *p ;
+	int i;
+	
+	switch(codigo)
+	{
+		case 1:
+			strcat(nome, "InsertionSort");
+			break;
+		case 2:
+			strcat(nome, "SelectionSort");
+			break;
+		case 3:
+			strcat(nome, "MergeSort");
+			break;
+		case 4:
+			strcat(nome, "ShellSort");
+			break;
+		case 5:
+			strcat(nome, "HeapSort");
+			break;
+		case 6:
+			strcat(nome, "QuickSort");
+			break;
+			
+	}
+	switch(ordem)
+	{
+		case 'c':
+			strcat(nome, "Crescente");
+			break;
+		case 'd':
+			strcat(nome, "Decrescente");
+			break;
+		case 'r':
+			strcat(nome, "Aleatorio");
+			break;
+	}
+	strcat(nome, tam);
+	strcat(nome, ".txt");
+	
+	p = fopen(nome, "w");
+	fprintf(p, "%d\n", atoi(tam));
+	for(i=0; i < atoi(tam); i++)
+	{
+		fprintf(p, "%d\n", vetor[i]);
+	}
+	fclose(p);
+}
+void gerarSaida(int *vetor, char tam[], char ordem, int codigo)
+{
+	char nome[40] = "Saida";
+	FILE *p ;
+	int i;
+	
+	switch(codigo)
+	{
+		case 1:
+			strcat(nome, "InsertionSort");
+			break;
+		case 2:
+			strcat(nome, "SelectionSort");
+			break;
+		case 3:
+			strcat(nome, "MergeSort");
+			break;
+		case 4:
+			strcat(nome, "ShellSort");
+			break;
+		case 5:
+			strcat(nome, "HeapShor");
+			break;
+		case 6:
+			strcat(nome, "QuickSort");
+			break;
+	}
+	switch(ordem)
+	{
+		case 'c':
+			strcat(nome, "Crescente");
+			break;
+		case 'd':
+			strcat(nome, "Decrescente");
+			break;
+		case 'r':
+			strcat(nome, "Aleatorio");
+			break;
+	}
+	strcat(nome, tam);
+	strcat(nome, ".txt");
+	
+	p = fopen(nome, "w");
+	fprintf(p, "%d\n", atoi(tam));
+	for(i=0; i < (atoi(tam)); i++)
+	{
+		fprintf(p, "%d\n", vetor[i]);
+	}
+	fclose(p);
+}
+
+void gerarTempo(double tempo, char tam[], char ordem, int codigo)
+{
+	char nome[40] = "Tempo";
+	FILE *p ;
+	int i;
+	
+	switch(codigo)
+	{
+		case 1:
+			strcat(nome, "InsertionSort");
+			break;
+		case 2:
+			strcat(nome, "SelectionSort");
+			break;
+		case 3:
+			strcat(nome, "MergeSort");
+			break;
+		case 4:
+			strcat(nome, "Shellshor");
+			break;
+		case 5:
+			strcat(nome, "HeapSort");
+			break;
+		case 6:
+			strcat(nome, "QuickSort");
+			break;
+	}
+	switch(ordem)
+	{
+		case 'c':
+			strcat(nome, "Crescente");
+			break;
+		case 'd':
+			strcat(nome, "Decrescente");
+			break;
+		case 'r':
+			strcat(nome, "Aleatorio");
+			break;
+	}
+	strcat(nome, tam);
+	strcat(nome, ".txt");
+	
+	p = fopen(nome, "w");
+	fprintf(p, "%.20f\n", tempo);
+	
+	fclose(p);
+}
+
+int main()
+{
+	int codigo;
+	char ordem;
+	int *vetor10;
+	int *vetor1000;
+	int *vetor10000;
+	int *vetor100000;
+	int *vetor1000000;
+	
+	clock_t c1;
+	double tempo;
+	
+	vetor10 = (int*) malloc(sizeof(int)*10);
+	vetor1000 = (int*) malloc(sizeof(int)*1000);
+	vetor10000 = (int*) malloc(sizeof(int)*10000);
+	vetor100000 = (int*) malloc(sizeof(int)*100000);
+	vetor1000000 = (int*) malloc(sizeof(int)*1000000);
+	
+	printf("Digite o codigo correspondente ao metodo desejado: \n1-InsertionSort \n2-SelectionSort \n3-MergeSort\n4-Shellsort\n5-HeapSort\n6-QuickSort\n");
+	scanf("%d", &codigo);
+	fflush(stdin);
+	printf("Digite o codigo da maneira que deseja a ordenacao do vetor: \nC- Crescente \nR-Aleatorio \nD-Decrescente \n");
+	scanf("%c", &ordem);
+	fflush(stdin);
+	ordem = tolower(ordem);
+	
+	gerarSequencia(vetor10, 10, ordem);
+	gerarSequencia(vetor1000, 1000, ordem);
+	gerarSequencia(vetor10000, 10000, ordem);
+	gerarSequencia(vetor100000, 100000, ordem);
+	gerarSequencia(vetor1000000, 1000000, ordem);
+	
+	//chamar as funções.
+	switch(codigo)
+	{
+		case 1:
+			gerarArquivo(vetor10, "10", ordem, codigo);
+			c1 = clock();
+			Insertion_Sort(vetor10,10);
+			tempo = (clock() - c1) / (double)CLOCKS_PER_SEC;
+			gerarTempo(tempo, "10", ordem, codigo);
+			gerarSaida(vetor10, "10", ordem, codigo);
+			
+			gerarArquivo(vetor1000, "1000", ordem, codigo);
+			c1 = clock();
+			Insertion_Sort(vetor10000,1000);
+			tempo = (clock() - c1) / (double)CLOCKS_PER_SEC;
+			gerarTempo(tempo, "1000", ordem, codigo);
+			gerarSaida(vetor10000, "1000", ordem, codigo);
+			
+			gerarArquivo(vetor100000, "10000", ordem, codigo);
+			c1 = clock();
+			Insertion_Sort(vetor100000,10000);
+			tempo = (clock() - c1) / (double)CLOCKS_PER_SEC;
+			gerarTempo(tempo, "10000", ordem, codigo);
+			gerarSaida(vetor100000, "10000", ordem, codigo);
+			
+			gerarArquivo(vetor1000000, "100000", ordem, codigo);
+			c1 = clock();
+			Insertion_Sort(vetor1000000,100000);
+			tempo = (clock() - c1) / (double)CLOCKS_PER_SEC;
+			gerarTempo(tempo, "100000", ordem, codigo);
+			gerarSaida(vetor1000000, "100000", ordem, codigo);
+			
+			gerarArquivo(vetor1000000, "1000000", ordem, codigo);
+			c1 = clock();
+			Insertion_Sort(vetor1000000,1000000);
+			tempo = (clock() - c1) / (double)CLOCKS_PER_SEC;
+			gerarTempo(tempo, "1000000", ordem, codigo);
+			gerarSaida(vetor1000000, "1000000", ordem, codigo);
+			break;
+			//-------------------------------------------
+			case 2:
+			gerarArquivo(vetor10, "10", ordem, codigo);
+			c1 = clock();
+			Selection_Sort(vetor10,10);
+			tempo = (clock() - c1) / (double)CLOCKS_PER_SEC;
+			gerarTempo(tempo, "10", ordem, codigo);
+			gerarSaida(vetor10, "10", ordem, codigo);
+			
+			gerarArquivo(vetor10000, "1000", ordem, codigo);
+			c1 = clock();
+			Selection_Sort(vetor10000,1000);
+			tempo = (clock() - c1) / (double)CLOCKS_PER_SEC;
+			gerarTempo(tempo, "1000", ordem, codigo);
+			gerarSaida(vetor10000, "1000", ordem, codigo);
+			
+			gerarArquivo(vetor100000, "10000", ordem, codigo);
+			c1 = clock();
+			Selection_Sort(vetor100000,10000);
+			tempo = (clock() - c1) / (double)CLOCKS_PER_SEC;
+			gerarTempo(tempo, "10000", ordem, codigo);
+			gerarSaida(vetor100000, "10000", ordem, codigo);
+			
+			gerarArquivo(vetor1000000, "100000", ordem, codigo);
+			c1 = clock();
+			Selection_Sort(vetor1000000,100000);
+			tempo = (clock() - c1) / (double)CLOCKS_PER_SEC;
+			gerarTempo(tempo, "100000", ordem, codigo);
+			gerarSaida(vetor1000000, "100000", ordem, codigo);
+			
+			gerarArquivo(vetor1000000, "1000000", ordem, codigo);
+			c1 = clock();
+			Selection_Sort(vetor1000000,1000000);
+			tempo = (clock() - c1) / (double)CLOCKS_PER_SEC;
+			gerarTempo(tempo, "1000000", ordem, codigo);
+			gerarSaida(vetor1000000, "1000000", ordem, codigo);
+			break;
+			//-----------------------------------------
+			case 3:
+			gerarArquivo(vetor10, "10", ordem, codigo);
+			c1 = clock();
+			mergeSort(vetor10,10);
+			tempo = (clock() - c1) / (double)CLOCKS_PER_SEC;
+			gerarTempo(tempo, "10", ordem, codigo);
+			gerarSaida(vetor10, "10", ordem, codigo);
+			
+			gerarArquivo(vetor10000, "1000", ordem, codigo);
+			c1 = clock();
+			mergeSort(vetor10000,1000);
+			tempo = (clock() - c1) / (double)CLOCKS_PER_SEC;
+			gerarTempo(tempo, "1000", ordem, codigo);
+			gerarSaida(vetor10000, "1000", ordem, codigo);
+			
+			gerarArquivo(vetor100000, "10000", ordem, codigo);
+			c1 = clock();
+			mergeSort(vetor100000,10000);
+			tempo = (clock() - c1) / (double)CLOCKS_PER_SEC;
+			gerarTempo(tempo, "10000", ordem, codigo);
+			gerarSaida(vetor100000, "10000", ordem, codigo);
+			
+			gerarArquivo(vetor1000000, "100000", ordem, codigo);
+			c1 = clock();
+			mergeSort(vetor1000000,100000);
+			tempo = (clock() - c1) / (double)CLOCKS_PER_SEC;
+			gerarTempo(tempo, "100000", ordem, codigo);
+			gerarSaida(vetor1000000, "100000", ordem, codigo);
+			
+			gerarArquivo(vetor1000000, "1000000", ordem, codigo);
+			c1 = clock();
+			mergeSort(vetor1000000,1000000);
+			tempo = (clock() - c1) / (double)CLOCKS_PER_SEC;
+			gerarTempo(tempo, "1000000", ordem, codigo);
+			gerarSaida(vetor1000000, "1000000", ordem, codigo);
+			break;
+			//------------------------------------------
+				case 4:
+			gerarArquivo(vetor10, "10", ordem, codigo);
+			c1 = clock();
+			ShellSort(vetor10,10);
+			tempo = (clock() - c1) / (double)CLOCKS_PER_SEC;
+			gerarTempo(tempo, "10", ordem, codigo);
+			gerarSaida(vetor10, "10", ordem, codigo);
+			
+			gerarArquivo(vetor10000, "1000", ordem, codigo);
+			c1 = clock();
+			ShellSort(vetor10000,1000);
+			tempo = (clock() - c1) / (double)CLOCKS_PER_SEC;
+			gerarTempo(tempo, "1000", ordem, codigo);
+			gerarSaida(vetor10000, "1000", ordem, codigo);
+			
+			gerarArquivo(vetor100000, "10000", ordem, codigo);
+			c1 = clock();
+			ShellSort(vetor100000,10000);
+			tempo = (clock() - c1) / (double)CLOCKS_PER_SEC;
+			gerarTempo(tempo, "10000", ordem, codigo);
+			gerarSaida(vetor100000, "10000", ordem, codigo);
+			
+			gerarArquivo(vetor1000000, "100000", ordem, codigo);
+			c1 = clock();
+			ShellSort(vetor1000000,100000);
+			tempo = (clock() - c1) / (double)CLOCKS_PER_SEC;
+			gerarTempo(tempo, "100000", ordem, codigo);
+			gerarSaida(vetor1000000, "100000", ordem, codigo);
+			
+			gerarArquivo(vetor1000000, "1000000", ordem, codigo);
+			c1 = clock();
+			ShellSort(vetor1000000,1000000);
+			tempo = (clock() - c1) / (double)CLOCKS_PER_SEC;
+			gerarTempo(tempo, "1000000", ordem, codigo);
+			gerarSaida(vetor1000000, "1000000", ordem, codigo);
+			break;
+			//-----------------------------------------
+			case 5:
+			gerarArquivo(vetor10, "10", ordem, codigo);
+			c1 = clock();
+			HeapSort(vetor10,10);
+			tempo = (clock() - c1) / (double)CLOCKS_PER_SEC;
+			gerarTempo(tempo, "10", ordem, codigo);
+			gerarSaida(vetor10, "10", ordem, codigo);
+			
+			gerarArquivo(vetor10000, "1000", ordem, codigo);
+			c1 = clock();
+			HeapSort(vetor10000,1000);
+			tempo = (clock() - c1) / (double)CLOCKS_PER_SEC;
+			gerarTempo(tempo, "1000", ordem, codigo);
+			gerarSaida(vetor10000, "1000", ordem, codigo);
+			
+			gerarArquivo(vetor100000, "10000", ordem, codigo);
+			c1 = clock();
+			HeapSort(vetor100000,10000);
+			tempo = (clock() - c1) / (double)CLOCKS_PER_SEC;
+			gerarTempo(tempo, "10000", ordem, codigo);
+			gerarSaida(vetor100000, "10000", ordem, codigo);
+			
+			gerarArquivo(vetor1000000, "100000", ordem, codigo);
+			c1 = clock();
+			HeapSort(vetor1000000,100000);
+			tempo = (clock() - c1) / (double)CLOCKS_PER_SEC;
+			gerarTempo(tempo, "100000", ordem, codigo);
+			gerarSaida(vetor1000000, "100000", ordem, codigo);
+			
+			gerarArquivo(vetor1000000, "1000000", ordem, codigo);
+			c1 = clock();
+			HeapSort(vetor1000000,1000000);
+			tempo = (clock() - c1) / (double)CLOCKS_PER_SEC;
+			gerarTempo(tempo, "1000000", ordem, codigo);
+			gerarSaida(vetor1000000, "1000000", ordem, codigo);
+			break;
+			
+			//-----------------------------------------
+			case 6:
+			gerarArquivo(vetor10, "10", ordem, codigo);
+			c1 = clock();
+			QuickSort(vetor10,10);
+			tempo = (clock() - c1) / (double)CLOCKS_PER_SEC;
+			gerarTempo(tempo, "10", ordem, codigo);
+			gerarSaida(vetor10, "10", ordem, codigo);
+			
+			gerarArquivo(vetor10000, "1000", ordem, codigo);
+			c1 = clock();
+			QuickSort(vetor10000,1000);
+			tempo = (clock() - c1) / (double)CLOCKS_PER_SEC;
+			gerarTempo(tempo, "1000", ordem, codigo);
+			gerarSaida(vetor10000, "1000", ordem, codigo);
+			
+			gerarArquivo(vetor100000, "10000", ordem, codigo);
+			c1 = clock();
+			QuickSort(vetor100000,10000);
+			tempo = (clock() - c1) / (double)CLOCKS_PER_SEC;
+			gerarTempo(tempo, "10000", ordem, codigo);
+			gerarSaida(vetor100000, "10000", ordem, codigo);
+			
+			gerarArquivo(vetor1000000, "100000", ordem, codigo);
+			c1 = clock();
+			QuickSort(vetor1000000,100000);
+			tempo = (clock() - c1) / (double)CLOCKS_PER_SEC;
+			gerarTempo(tempo, "100000", ordem, codigo);
+			gerarSaida(vetor1000000, "100000", ordem, codigo);
+			
+			gerarArquivo(vetor1000000, "1000000", ordem, codigo);
+			c1 = clock();
+			QuickSort(vetor1000000,1000000);
+			tempo = (clock() - c1) / (double)CLOCKS_PER_SEC;
+			gerarTempo(tempo, "1000000", ordem, codigo);
+			gerarSaida(vetor1000000, "1000000", ordem, codigo);
+			break;
+	}
+	
+	free(vetor10);
+	free(vetor1000);
+	free(vetor10000);
+	free(vetor100000);
+	free(vetor1000000);
+	return 0;
+}
+
+
